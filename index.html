@@ -1,0 +1,68 @@
+<html ng-app="listaTelefonica">
+<head>
+	<title>Lista Telefonica</title>
+	<link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.css">
+	<script src="lib/angular/angular.js"></script>
+	<style>
+		.jumbotron {
+			width: 400px;
+			text-align: center;
+			margin: 20px auto auto auto;
+			}
+		.table {
+			margin-top: 20px;
+		}
+		.form-control {
+			margin-bottom: 5px;
+		}
+	</style>
+	<style type="text/css"></style>
+	<script>
+		angular.module("listaTelefonica",[]);
+		angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function ($scope) {
+			$scope.app = "listaTelefonica";
+			$scope.contatos = [
+				{nome: "pedro", telefone: "999999999"},
+				{nome: "joao", telefone: "88888888"},
+				{nome: "ana", telefone: "77777777"}
+			];
+			$scope.operadoras = [
+				{nome: "Claro", codigo: 14, categoria: "Celular"},
+				{nome: "Oi", codigo: 15 , categoria: "Celular" },
+				{nome: "Tim", codigo: 16 , categoria: "Celular"},
+				{nome: "GVT", codigo: 16 , categoria: "Fixo"},
+				{nome: "Embratel", codigo: 16 , categoria: "Fixo"}
+			];
+		$scope.adicionarContato = function (contato) {
+			$scope.contatos.push(contato);
+			delete $scope.contato;
+		};
+	});
+	</script>
+</head>
+<body ng-controller="listaTelefonicaCtrl">
+	<div class="jumbotron">
+		<h3>{{app}}</h3>
+		<table class="table table-striped">
+			<tr>
+				<th>Nome</th>
+				<th>Telefone</th>
+				<th>Operadora</th>
+			</tr>
+			<tr ng-repeat="contato in contatos">
+				<td> {{contato.nome}} </td>
+				<td> {{contato.telefone}} </td>
+				<td> {{contato.operadora.nome}} </td>
+			</tr>
+		</table>
+		<hr/>
+		{{contato}}
+		<input class="form-control" type="text" ng-model="contato.nome" placeholder="Nome"></input>
+		<input class="form-control" type="text" ng-model="contato.telefone" placeholder="Telefone"></input>
+		<select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome group by operadora.categoria for operadora in operadoras">
+		<option value="">Selecione uma operadora</option>
+		</select>
+		<button class="btn btn-primary btn-block" ng-disabled="!contato.nome || !contato.telefone" ng-click="adicionarContato(contato)">Adicionar Contato</button>
+	</div>
+</body>
+</html>
