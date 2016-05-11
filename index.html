@@ -4,6 +4,7 @@
 	<title>Lista Telefonica</title>
 	<link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.css">
 	<script src="lib/angular/angular.js"></script>
+	<script src="lib/angular/angular-locale_pt-br.js"></script>
 	<script src="lib/angular/angular-messages.js"></script>
 	<style>
 		.jumbotron {
@@ -34,19 +35,15 @@
 	<style type="text/css"></style>
 	<script>
 		angular.module("listaTelefonica", ["ngMessages"]);
-		angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function ($scope) {
+		angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function ($scope, $http) {
 			$scope.app = "Lista Telefonica";
-			$scope.contatos = [
-				{nome: "pedro", telefone: "999999999", data: new Date(), operadora: {nome: "Claro", codigo: 14, categoria: "Celular"}, cor: "blue"},
-				{nome: "joao", telefone: "88888888", data: new Date(), operadora: {nome: "Oi", codigo: 15 , categoria: "Celular" }, cor: "yellow" },
-				{nome: "ana", telefone: "77777777", data: new Date(), operadora: {nome: "Tim", codigo: 16 , categoria: "Celular"}, cor: "red"}
-			];
+			$scope.contatos = [];
 			$scope.operadoras = [
-				{nome: "Claro", codigo: 14, categoria: "Celular"},
-				{nome: "Oi", codigo: 15 , categoria: "Celular" },
-				{nome: "Tim", codigo: 16 , categoria: "Celular"},
-				{nome: "GVT", codigo: 16 , categoria: "Fixo"},
-				{nome: "Embratel", codigo: 16 , categoria: "Fixo"}
+				{nome: "Claro", codigo: 14, categoria: "Celular", preco: 1},
+				{nome: "Oi", codigo: 15 , categoria: "Celular" , preco: 2},
+				{nome: "Tim", codigo: 16 , categoria: "Celular", preco: 2},
+				{nome: "GVT", codigo: 16 , categoria: "Fixo", preco: 1},
+				{nome: "Embratel", codigo: 16 , categoria: "Fixo", preco: 1}
 			];
 		$scope.adicionarContato = function (contato) {
 			$scope.contatos.push(contato);
@@ -68,12 +65,13 @@
 				return contato.selecionado;
 			});
 		};
-		$scope.ordernarPor = function (campo) {
+		$scope.ordenarPor = function (campo) {
 			$scope.criterioDeOrdenacao = campo;
+			$scope.direcaoDaOrdenacao = !$scope.direcaoDaOrdenacao;
 		};
 
 	});
-	</script>
+	</script>	
 </head>
 <body ng-controller="listaTelefonicaCtrl">
 	<div class="jumbotron">
@@ -82,14 +80,14 @@
 		<table class="table">
 			<tr>
 				<th></th>
-				<th><a href="" ng-click="ordernarPor(nome)"> Nome </a> </th>
-				<th><a href="" ng-click="ordernarPor(telefone)"> Telefone </a></th>
+				<th><a href="" ng-click="ordenarPor('nome')"> Nome </a> </th>
+				<th><a href="" ng-click="ordenarPor('telefone')"> Telefone </a></th>
 				<th>Operadora</th>
 				<th>Data</th>
 			</tr>
-			<tr ng-class="{'selecionado negrito': contato.selecionado}" ng-repeat="contato in contatos | filter: criterioDeBusca | orderBy: 'criterioDeOrdenacao':false">
+			<tr ng-class="{'selecionado negrito': contato.selecionado}" ng-repeat="contato in contatos | filter: criterioDeBusca | orderBy: criterioDeOrdenacao:direcaoDaOrdenacao">
 				<td><input type="checkbox" ng-model=contato.selecionado></input></td></td>
-				<td> {{contato.nome | uppercase}} </td>
+				<td> {{contato.nome}} </td>
 				<td> {{contato.telefone}} </td>
 				<td> {{contato.operadora.nome | lowercase}} </td>
 				<td> {{contato.data | date: 'dd/MM/yyyy'}} </td>
@@ -100,7 +98,7 @@
 		<form name="contatoForm">
 			<input class="form-control" type="text" ng-model="contato.nome" name="nome" placeholder="Nome" ng-required="true" ng-minlength="10"></input>
 			<input class="form-control" type="text" ng-model="contato.telefone" name = "telefone" placeholder="Telefone" ng-required="true" ng-pattern="/^\d{4,5}-\d{4}$/"></input>
-			<select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome group by operadora.categoria for operadora in operadoras">
+			<select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome +'('+ (operadora.preco | currency) +')'  for operadora in operadoras | orderBy : 'nome'">
 			<option value="">Selecione uma operadora</option>
 			</select>
 		</form>
